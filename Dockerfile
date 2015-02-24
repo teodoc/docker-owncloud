@@ -20,6 +20,9 @@ RUN sudo sed -i '$a php_value output_buffering Off' /usr/share/webapps/owncloud/
 # setup Apache for owncloud
 RUN sudo cp /etc/webapps/owncloud/apache.example.conf /etc/httpd/conf/extra/owncloud.conf
 RUN sudo sed -i '$a Include conf/extra/owncloud.conf' /etc/httpd/conf/httpd.conf
+
+RUN sudo sed -i '$a LimitRequestLine 32760' /etc/httpd/conf/httpd.conf
+
 RUN sudo chown -R http:http /usr/share/webapps/owncloud/
 
 RUN sudo sed -i 's,#SSLCertificateChainFile,SSLCertificateChainFile,g' /etc/httpd/conf/extra/httpd-ssl.conf
