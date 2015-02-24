@@ -7,7 +7,7 @@ RUN sudo rm /srv/http/info.php
 # install some owncloud optional deps
 RUN sudo pacman -Suy --noconfirm --needed smbclient
 #RUN pacman -Suy --noconfirm --needed ffmpeg
-RUN pacman -Suy --noconfirm --needed  libreoffice-still
+#RUN pacman -Suy --noconfirm --needed libreoffice-still
 
 # Install owncloud
 RUN sudo pacman -Suy --noconfirm --needed owncloud
