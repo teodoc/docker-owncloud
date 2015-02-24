@@ -24,7 +24,7 @@ RUN sudo chown -R http:http /usr/share/webapps/owncloud/
 
 RUN sudo sed -i 's,#SSLCertificateChainFile,SSLCertificateChainFile,g' /etc/httpd/conf/extra/httpd-ssl.conf
 RUN sudo sed -i 's,/etc/httpd/conf/server-ca.crt,/https/server-ca.crt,g' /etc/httpd/conf/extra/httpd-ssl.conf
-RUN sudo sed -i 's,SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5,SSLCipherSuite EECDH+ECDSA+AESGCM EECDH+aRSA+AESGCM EECDH+ECDSA+SHA384 EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384 EECDH+aRSA+SHA256 EECDH+aRSA+RC4 EECDH EDH+aRSA RC4 !aNULL !eNULL !LOW !3DES !MD5 !EXP !PSK !SRP !DSS,g' /etc/httpd/conf/extra/httpd-ssl.conf
+RUN sudo sed -i 's,SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5,SSLCipherSuite EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256 EECDH+aRSA+SHA384:EECDH+aRSA+SHA256:EECDH+aRSA+RC4:EECDH EDH+aRSA RC4:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS,g' /etc/httpd/conf/extra/httpd-ssl.conf
 RUN sudo sed -i 's,#SSLCARevocationCheck chain,SSLProtocol all -SSLv2 -SSLv3,g' /etc/httpd/conf/extra/httpd-ssl.conf
 RUN sudo sed -i 's,#SSLHonorCipherOrder on,SSLHonorCipherOrder on,g' /etc/httpd/conf/extra/httpd-ssl.conf
 
