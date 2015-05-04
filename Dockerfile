@@ -1,41 +1,61 @@
 FROM l3iggs/lamp
 MAINTAINER l3iggs <l3iggs@live.com>
+# Report issues here: https://github.com/l3iggs/docker-owncloud/issues
+# Say thanks by adding a comment here: https://registry.hub.docker.com/u/l3iggs/owncloud/
 
 # remove info.php
-RUN sudo rm /srv/http/info.php
+RUN rm /srv/http/info.php
 
-# install some owncloud optional deps
-RUN sudo pacman -Suy --noconfirm --needed smbclient
-#RUN pacman -Suy --noconfirm --needed ffmpeg
-#RUN pacman -Suy --noconfirm --needed libreoffice-still
+# to mount SAMBA shares: 
+RUN pacman -S --noconfirm --needed smbclient
+
+# for video file previews
+RUN pacman -S --noconfirm --needed ffmpeg
+
+# for document previews
+RUN pacman -S --noconfirm --needed libreoffice-fresh
 
 # Install owncloud
-RUN sudo pacman -Suy --noconfirm --needed owncloud
+RUN pacman -S --noconfirm --needed owncloud
+
+# Install owncloud addons
+RUN pacman -S --noconfirm --needed owncloud-app-bookmarks
+RUN pacman -S --noconfirm --needed owncloud-app-calendar
+RUN pacman -S --noconfirm --needed owncloud-app-contacts
+RUN pacman -S --noconfirm --needed owncloud-app-documents
 
 # enable large file uploads
-RUN sudo sed -i 's,;php_value upload_max_filesize 513M,php_value upload_max_filesize 30G,g' /usr/share/webapps/owncloud/.htaccess
-RUN sudo sed -i 's,;php_value post_max_size 513M,php_value post_max_size 30G,g' /usr/share/webapps/owncloud/.htaccess
-RUN sudo sed -i '$a php_value output_buffering Off' /usr/share/webapps/owncloud/.htaccess
+RUN sed -i 's,php_value upload_max_filesize 513M,php_value upload_max_filesize 30G,g' /usr/share/webapps/owncloud/.htaccess
+RUN sed -i 's,php_value post_max_size 513M,php_value post_max_size 30G,g' /usr/share/webapps/owncloud/.htaccess
+RUN sed -i 's,<IfModule mod_php5.c>,<IfModule mod_php5.c>\nphp_value output_buffering Off,g' /usr/share/webapps/owncloud/.htaccess
 
 # setup Apache for owncloud
-RUN sudo cp /etc/webapps/owncloud/apache.example.conf /etc/httpd/conf/extra/owncloud.conf
-RUN sudo sed -i '$a Include conf/extra/owncloud.conf' /etc/httpd/conf/httpd.conf
+ADD owncloud.conf /etc/httpd/conf/extra/owncloud.conf
+RUN sed -i 's,Options Indexes FollowSymLinks,Options -Indexes,g' /etc/httpd/conf/httpd.conf
+RUN sed -i '$a Include conf/extra/owncloud.conf' /etc/httpd/conf/httpd.conf
+RUN chown -R http:http /usr/share/webapps/owncloud/
 
-RUN sudo sed -i '$a LimitRequestLine 32760' /etc/httpd/conf/httpd.conf
+#ssl
+RUN sed -i 's,#SSLCertificateChainFile,SSLCertificateChainFile,g' /etc/httpd/conf/extra/httpd-ssl.conf
+RUN sed -i 's,/etc/httpd/conf/server-ca.crt,/https/server-ca.crt,g' /etc/httpd/conf/extra/httpd-ssl.conf
+RUN sed -i 's,SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5,SSLCipherSuite EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:EECDH+aRSA+SHA384:EECDH+aRSA+SHA256:EECDH+aRSA+RC4:EECDH:EDH+aRSA:RC4:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS,g' /etc/httpd/conf/extra/httpd-ssl.conf
+RUN sed -i 's,#SSLCARevocationCheck chain,SSLProtocol all -SSLv2 -SSLv3,g' /etc/httpd/conf/extra/httpd-ssl.conf
+RUN sed -i 's,#SSLHonorCipherOrder on,SSLHonorCipherOrder on,g' /etc/httpd/conf/extra/httpd-ssl.conf
 
-RUN sudo chown -R http:http /usr/share/webapps/owncloud/
+# expose web server ports
+EXPOSE 80
+EXPOSE 443
 
-RUN sudo sed -i 's,#SSLCertificateChainFile,SSLCertificateChainFile,g' /etc/httpd/conf/extra/httpd-ssl.conf
-RUN sudo sed -i 's,/etc/httpd/conf/server-ca.crt,/https/server-ca.crt,g' /etc/httpd/conf/extra/httpd-ssl.conf
-RUN sudo sed -i 's,SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5,SSLCipherSuite EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:EECDH+aRSA+SHA384:EECDH+aRSA+SHA256:EECDH+aRSA+RC4:EECDH:EDH+aRSA:RC4:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS,g' /etc/httpd/conf/extra/httpd-ssl.conf
-RUN sudo sed -i 's,#SSLCARevocationCheck chain,SSLProtocol all -SSLv2 -SSLv3,g' /etc/httpd/conf/extra/httpd-ssl.conf
-RUN sudo sed -i 's,#SSLHonorCipherOrder on,SSLHonorCipherOrder on,g' /etc/httpd/conf/extra/httpd-ssl.conf
+# expose some important directories as volumes
+VOLUME ["/usr/share/webapps/owncloud/data"]
+VOLUME ["/etc/webapps/owncloud/config"]
 
-RUN sudo sed -i 's,/etc/webapps/owncloud,/etc/webapps/owncloud:/dev/urandom,g' /etc/httpd/conf/extra/owncloud.conf 
+# place your ssl cert files in here. name them server.key and server.crt
+VOLUME ["/https"]
 
+# TODO: figure out why this directory does not already exist
+RUN mkdir /run/httpd
 
-# start apache and mysql
-CMD cd '/usr'; sudo /usr/bin/mysqld_safe --datadir='/var/lib/mysql'& sudo apachectl -DFOREGROUND
-
-
+# start apache and mysql servers
+CMD cd /usr; /usr/bin/mysqld_safe --datadir=/var/lib/mysql& /usr/bin/apachectl -DFOREGROUND
 
