@@ -6,6 +6,8 @@ MAINTAINER l3iggs <l3iggs@live.com>
 # remove info.php
 RUN rm /srv/http/info.php
 
+RUN pacman -Sy --noconfirm
+
 # to mount SAMBA shares: 
 RUN pacman -S --noconfirm --needed smbclient
 
