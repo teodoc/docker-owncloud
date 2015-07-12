@@ -25,6 +25,7 @@ RUN pacman -S --noconfirm --needed owncloud-app-bookmarks
 RUN pacman -S --noconfirm --needed owncloud-app-calendar
 RUN pacman -S --noconfirm --needed owncloud-app-contacts
 RUN pacman -S --noconfirm --needed owncloud-app-documents
+RUN pacman -S --noconfirm --needed owncloud-app-gallery
 
 # enable large file uploads
 RUN sed -i 's,php_value upload_max_filesize 513M,php_value upload_max_filesize 30G,g' /usr/share/webapps/owncloud/.htaccess
