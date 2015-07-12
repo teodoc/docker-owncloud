@@ -56,7 +56,7 @@ VOLUME ["/etc/webapps/owncloud/config"]
 VOLUME ["/https"]
 
 # TODO: figure out why this directory does not already exist
-RUN mkdir /run/httpd
+# RUN mkdir /run/httpd
 
 # start apache and mysql servers
 CMD cd /usr; /usr/bin/mysqld_safe --datadir=/var/lib/mysql& /usr/bin/apachectl -DFOREGROUND
