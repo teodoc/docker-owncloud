@@ -34,6 +34,8 @@ RUN sed -i 's,;zend_extension=opcache.so,zend_extension=opcache.so,g' /etc/php/p
 RUN sed -i 's,;extension=tidy.so,extension=apcu.so,g' /etc/php/php.ini
 RUN sed -i 's,memory_limit = 128M,memory_limit = 512M,g' /etc/php/php.ini 
 
+RUN sed -i 's,open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/share/webapps/,open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/share/webapps/:/dev/urandom,g' /etc/php/php.ini 
+
 
 # enable large file uploads
 RUN sed -i 's,php_value upload_max_filesize 513M,php_value upload_max_filesize 30G,g' /usr/share/webapps/owncloud/.htaccess
