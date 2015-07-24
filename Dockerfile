@@ -32,6 +32,8 @@ RUN pacman -S --noconfirm --needed owncloud-app-gallery
 RUN pacman -S --noconfirm --needed php-apcu
 RUN sed -i 's,;zend_extension=opcache.so,zend_extension=opcache.so,g' /etc/php/php.ini
 RUN sed -i 's,;extension=tidy.so,extension=apcu.so,g' /etc/php/php.ini
+RUN sed -i 's,memory_limit = 128M,memory_limit = 512M,g' /etc/php/php.ini 
+
 
 # enable large file uploads
 RUN sed -i 's,php_value upload_max_filesize 513M,php_value upload_max_filesize 30G,g' /usr/share/webapps/owncloud/.htaccess
