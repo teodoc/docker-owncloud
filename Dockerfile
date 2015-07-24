@@ -53,10 +53,6 @@ RUN sed -i 's,SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5,SSLCipherSuite EECDH+ECDSA+
 RUN sed -i 's,#SSLCARevocationCheck chain,SSLProtocol all -SSLv2 -SSLv3,g' /etc/httpd/conf/extra/httpd-ssl.conf
 RUN sed -i 's,#SSLHonorCipherOrder on,SSLHonorCipherOrder on,g' /etc/httpd/conf/extra/httpd-ssl.conf
 
-RUN sed -i 's,#SSLCipherSuite RC4-SHA:AES128-SHA:HIGH:MEDIUM:!aNULL:!MD5,Header add Strict-Transport-Security "max-age=15768000",g' /etc/httpd/conf/extra/httpd-ssl.conf
-
-
-
 # expose web server ports
 EXPOSE 80
 EXPOSE 443
