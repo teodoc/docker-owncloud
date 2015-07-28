@@ -34,7 +34,7 @@ RUN sed -i 's,;zend_extension=opcache.so,zend_extension=opcache.so,g' /etc/php/p
 RUN sed -i 's,;extension=tidy.so,extension=apcu.so,g' /etc/php/php.ini
 RUN sed -i 's,memory_limit = 128M,memory_limit = 512M,g' /etc/php/php.ini 
 
-RUN sed -i 's,open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/share/webapps/,open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/share/webapps/:/dev/urandom,g' /etc/php/php.ini 
+RUN sed -i 's,open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/share/webapps/,open_basedir = /srv/http/:/home/:/tmp/:/usr/share/pear/:/usr/share/webapps/:/dev,g' /etc/php/php.ini 
 
 
 # enable large file uploads
@@ -56,6 +56,8 @@ RUN sed -i 's,/etc/httpd/conf/server-ca.crt,/https/server-ca.crt,g' /etc/httpd/c
 RUN sed -i 's,SSLCipherSuite HIGH:MEDIUM:!aNULL:!MD5,SSLCipherSuite EECDH+ECDSA+AESGCM:EECDH+aRSA+AESGCM:EECDH+ECDSA+SHA384:EECDH+ECDSA+SHA256:EECDH+aRSA+SHA384:EECDH+aRSA+SHA256:EECDH+aRSA+RC4:EECDH:EDH+aRSA:RC4:!aNULL:!eNULL:!LOW:!3DES:!MD5:!EXP:!PSK:!SRP:!DSS,g' /etc/httpd/conf/extra/httpd-ssl.conf
 RUN sed -i 's,#SSLCARevocationCheck chain,SSLProtocol all -SSLv2 -SSLv3,g' /etc/httpd/conf/extra/httpd-ssl.conf
 RUN sed -i 's,#SSLHonorCipherOrder on,SSLHonorCipherOrder on,g' /etc/httpd/conf/extra/httpd-ssl.conf
+
+-RUN sed -i 's,#SSLCipherSuite RC4-SHA:AES128-SHA:HIGH:MEDIUM:!aNULL:!MD5,Header always add Strict-Transport-Security "max-age=15768000; includeSubDomains; preload",g' /etc/httpd/conf/extra/httpd-ssl.conf
 
 # expose web server ports
 EXPOSE 80
