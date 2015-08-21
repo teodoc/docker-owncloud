@@ -16,7 +16,7 @@ RUN pacman -S --noconfirm --needed ffmpeg
 
 # for document previews
 RUN pacman -S --noconfirm --needed libreoffice-fresh
-
+RUN sudo pacman -R mariadb --noconfirm
 
 # Install owncloud
 RUN pacman -S --noconfirm --needed owncloud
